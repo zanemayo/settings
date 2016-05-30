@@ -3,21 +3,28 @@ filetype off                  " required
 
 " set the runtime path to include Vundle and initialize
 set rtp+=$HOME/vimfiles/bundle/Vundle.vim/
-"set rtp+=~/.vim/bundle/Vundle.vim
-vundle#begin('$USERPROFILE/vimfiles/bundle/')
+call vundle#begin('$USERPROFILE/vimfiles/bundle/')
 
+" let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
-"Plugin 'ctrlp.vim'
-"Plugin 'elzr/vim-json'
-"Plugin 'editorconfig-vim'
-"Plugin 'altercation/vim-colors-solarized'
-"Plugin 'scrooloose/nerdtree'
-"Plugin 'scrooloose/syntastic'
-"Plugin 'eslint/eslint'
-"Plugin 'jlanzarotta/bufexplorer'
-
+Plugin 'tpope/vim-fugitive'
+Plugin 'L9'
+Plugin 'ctrlp.vim'
+Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
+Plugin 'editorconfig-vim'
+Plugin 'altercation/vim-colors-solarized'
+Plugin 'scrooloose/nerdtree'
+Plugin 'scrooloose/syntastic'
+Plugin 'eslint/eslint'
+Plugin 'jlanzarotta/bufexplorer'
+Plugin 'rust-lang/rust.vim'
+Plugin 'vim-airline/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
+" All of your Plugins must be added before the following line
 call vundle#end()            " required
 filetype plugin indent on    " required
+" To ignore plugin indent changes, instead use:
+"filetype plugin on
 "
 " Brief help
 " :PluginList       - lists configured plugins
@@ -29,44 +36,50 @@ filetype plugin indent on    " required
 " Put your non-Plugin stuff after this line
 
 "indentation stuff
-"set smartindent
-"set tabstop=2
-"set shiftwidth=2
-"set softtabstop=2
-"set expandtab
-"
-"set complete+=k "dictionary autocomplete
-"
-"set number "view line numbers
-"highlight LineNr ctermfg=grey
-"
-"set listchars=tab:â–¸â–¸,trail:~ "nicer whitespace chars
+set smartindent
+set tabstop=2
+set shiftwidth=2
+set softtabstop=2
+set expandtab
+
+set complete+=k "dictionary autocomplete
+
+set number "view line numbers
+highlight LineNr ctermfg=grey
+
+"set listchars=tab:ÎõÎéÎõÎé,trail:~ "nicer whitespace chars
 "set list "show whitespace
-"set mouse=nv "allow mouse
-"
-""skip backup & swap files
-"set nobackup
-"set nowritebackup
-"set noswapfile
-"
-""save readonly files with sudo using w!!
+set mouse=nv "allow mouse
+
+"skip backup & swap files
+set nobackup
+set nowritebackup
+set noswapfile
+
+"save readonly files with sudo using w!!
 "cmap w!! %!sudo tee > /dev/null %
-"
-"set exrc "allow per folder configs
-"set secure "disallow dangerous commands in per folder configs
-"
+
+set exrc "allow per folder configs
+set secure "disallow dangerous commands in per folder configs
+
 "syntax enable
 "set background=dark
 "colorscheme solarized
+"let g:solarized_termcolors=256
 inoremap jj <ESC>
-"set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/.idea/*,*/.DS_Store,*/vendor,*/node_modules
-"
-"set statusline+=%#warningmsg#
-"set statusline+=%{SyntasticStatuslineFlag()}
-"set statusline+=%*
-"
-"let g:syntastic_always_populate_loc_list = 1
-"let g:syntastic_auto_loc_list = 1
-"let g:syntastic_check_on_open = 1
-"let g:syntastic_check_on_wq = 0
-"let g:syntastic_javascript_checkers = ['eslint']
+set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/.idea/*,*/.DS_Store,*/vendor,*/node_modules
+
+:syntax on
+
+let g:airline#extensions#tabline#enabled = 1
+set laststatus=2
+
+
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
