@@ -10,6 +10,8 @@ Plugin 'VundleVim/Vundle.vim'
 Plugin 'tpope/vim-fugitive'
 Plugin 'L9'
 Plugin 'ctrlp.vim'
+Plugin 'elzr/vim-json'
+Plugin 'racer-rust/vim-racer'
 Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
 Plugin 'editorconfig-vim'
 Plugin 'altercation/vim-colors-solarized'
@@ -20,6 +22,9 @@ Plugin 'jlanzarotta/bufexplorer'
 Plugin 'rust-lang/rust.vim'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
+Plugin 'pangloss/vim-javascript'
+Plugin 'jelera/vim-javascript-syntax'
+"Plugin 'rking/ag.vim'
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
 filetype plugin indent on    " required
@@ -41,6 +46,7 @@ set tabstop=2
 set shiftwidth=2
 set softtabstop=2
 set expandtab
+set backspace=indent,eol,start
 
 set complete+=k "dictionary autocomplete
 
@@ -62,16 +68,21 @@ set noswapfile
 set exrc "allow per folder configs
 set secure "disallow dangerous commands in per folder configs
 
-"syntax enable
-"set background=dark
-"colorscheme solarized
+syntax enable
+set background=dark
 "let g:solarized_termcolors=256
+colorscheme solarized
 inoremap jj <ESC>
 set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/.idea/*,*/.DS_Store,*/vendor,*/node_modules
 
+nnoremap <CR> :wa<CR>:!!
+nnoremap <TAB> <C-w>w
+nnoremap <S-TAB> <C-w>W
 :syntax on
 
+
 let g:airline#extensions#tabline#enabled = 1
+let g:airline_theme="solarized"
 set laststatus=2
 
 
@@ -83,3 +94,7 @@ let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
+let g:syntastic_javascript_checkers = ['standard']
+
+"autocmd bufwritepost *.js silent !standard-format -w %
+"set autoread
