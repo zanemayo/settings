@@ -22,7 +22,7 @@ if [ -d "$HOME/bin" ] ; then
 fi
 
 export PATH="$HOME/.cargo/bin:$PATH"
-export RUST_SRC_PATH="$HOME/dev/rust/rustc-1.9.0/src"
+export RUST_SRC_PATH="$HOME/dev/rust/rustc-1.10.0/src"
 
 # set PATH so it includes user's private bin if it exists
 if [ -d "$HOME/bin" ] ; then
