@@ -7,6 +7,7 @@ call vundle#begin()
 
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
+Plugin 'zhaocai/GoldenView.Vim'
 Plugin 'tpope/vim-fugitive'
 Plugin 'L9'
 Plugin 'ctrlp.vim'
@@ -26,9 +27,15 @@ Plugin 'pangloss/vim-javascript'
 Plugin 'jelera/vim-javascript-syntax'
 Plugin 'rking/ag.vim'
 Plugin 'valloric/youcompleteme'
-Plugin 'ternjs/tern_for_vim'
-"Plugin 'zhaocai/GoldenView.Vim'
+" Plugin 'ternjs/tern_for_vim'
 Plugin 'tpope/vim-surround'
+" Plugin 'astashov/vim-ruby-debugger'
+" Plugin 'sidorares/node-vim-debugger'
+Plugin 'terryma/vim-multiple-cursors'
+Plugin 'Shougo/vimproc.vim'
+Plugin 'Quramy/tsuquyomi'
+Plugin 'leafgarland/typescript-vim'
+Plugin 'ervandew/supertab'
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
 filetype plugin indent on    " required
@@ -58,8 +65,13 @@ set number "view line numbers
 highlight LineNr ctermfg=grey
 
 "set listchars=tab:ÎõÎéÎõÎé,trail:~ "nicer whitespace chars
-"set list "show whitespace
+set listchars=trail:~
+set syntax=whitespace
+set list "show whitespace
 set mouse=nv "allow mouse
+
+"make copy to clipboard work in linux
+set clipboard=unnamedplus
 
 "skip backup & swap files
 set nobackup
@@ -72,25 +84,123 @@ set noswapfile
 set exrc "allow per folder configs
 set secure "disallow dangerous commands in per folder configs
 
+"let c='a'
+"while c <= 'z'
+"  exec "set <A-".c.">=\e".c
+"  exec "imap \e".c." <A-".c.">"
+"  let c = nr2char(1+char2nr(c))
+"endw
+"
+"set timeout ttimeoutlen=500
+
+inoremap \ej <C-o>j
+
 syntax enable
 set background=dark
 "let g:solarized_termcolors=256
 colorscheme solarized
+inoremap jk <ESC>
+inoremap kj <ESC>
 inoremap jj <ESC>
+inoremap <C-p> <C-r><C-r>"
 set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/.idea/*,*/.DS_Store,*/vendor,*/node_modules
 
 set <F2>=OQ
 set <F12>=[24~
 
-nnoremap <CR> :wa<CR>:!!
+nnoremap <Space>i <C-I>
+nnoremap <Space>o <C-O>
+nnoremap j gj
+nnoremap k gk
+nnoremap <Space>g :wa<CR>:!!<CR>
 nnoremap <TAB> <C-w>w
 nnoremap <S-TAB> <C-w>W
 nnoremap s :exec "normal i".nr2char(getchar())."\e"<CR>
 nnoremap S :exec "normal a".nr2char(getchar())."\e"<CR>
 nnoremap <F2> :TernRename<CR>
 nnoremap <F12> :TernDef<CR>
-:syntax on
+nmap gt gdf'gf
+" vnoremap / I// <ESC>
+vnoremap ; :s/^\(\s*\)\/\/ \?/\1/<CR>
+vnoremap / :s/^/\/\/ /<CR>:nohlsearch<CR>
+noremap <C-s> :w
+nnoremap <Space>t :NERDTree<CR> 
 
+" provide hjkl movements in Insert mode via the <Alt> modifier key
+inoremap <A-h> <C-o>h
+inoremap <A-j> <C-o>j
+inoremap <A-k> <C-o>k
+inoremap <A-l> <C-o>l
+inoremap <A-e> <C-o>e
+"inoremap <BS> <NOP>
+"inoremap <CR> <NOP>
+"
+
+" experimental
+nnoremap <C-j> 4j4<C-e>
+nnoremap <C-k> 4k4<C-y>
+nnoremap <C-j> 7j
+nnoremap <C-k> 7k
+nnoremap <C-h> _
+nnoremap <C-l> g_
+nnoremap <Space>q :q<CR>
+nnoremap <Space>w :w<CR>
+"nnoremap ; :
+
+nnoremap [c :cprevious <CR>
+nnoremap ]c :cnext <CR>
+
+nnoremap <Space>k :lprevious<CR>
+
+function! CloseLocationAndQuickFix()
+  :windo if &buftype == "quickfix" || &buftype == "locationlist" | lclose | endif
+endfunction
+
+nnoremap <Space>v :e ~/.vimrc<CR>
+nnoremap <Space>c :call CloseLocationAndQuickFix()<CR>
+" Typescript
+nnoremap <Space>r :TsuRenameSymbol<CR>
+nnoremap <Space>d :TsuDefinition<CR>
+nnoremap <Space>f :TsuReferences<CR>
+nnoremap <Space>s :TsuSearch 
+
+" wrap :cnext/:cprevious and :lnext/:lprevious
+function! WrapCommand(direction, prefix)
+    if a:direction == "up"
+        try
+            execute a:prefix . "previous"
+        catch /^Vim\%((\a\+)\)\=:E553/
+            execute a:prefix . "last"
+        catch /^Vim\%((\a\+)\)\=:E\%(776\|42\):/
+        endtry
+    elseif a:direction == "down"
+        try
+            execute a:prefix . "next"
+        catch /^Vim\%((\a\+)\)\=:E553/
+            execute a:prefix . "first"
+        catch /^Vim\%((\a\+)\)\=:E\%(776\|42\):/
+        endtry
+    endif
+endfunction
+
+" go up and down the quickfix list and wrap around
+nnoremap <Space>j :call WrapCommand('down', 'l')<CR>
+nnoremap <Space>k :call WrapCommand('up', 'l')<CR>
+
+" nnoremap <S-> O<Esc>j
+syntax on
+
+let g:tsuquyomi_disable_quickfix = 1
+let g:syntastic_typescript_checkers = ['tsuquyomi'] " You shouldn't use 'tsc' checker.
+
+set hlsearch
+set incsearch
+"highlight search cterm=underline
+nnoremap <Space>h :nohlsearch<CR>
+
+set pumheight=10
+
+set hidden
 
 let g:airline#extensions#tabline#enabled = 1
 let g:airline_theme="solarized"
@@ -103,12 +213,16 @@ set statusline+=%*
 
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
+let g:syntastic_check_on_open = 0
+let g:syntastic_check_on_wq = 1
 let g:syntastic_javascript_checkers = ['standard']
+
+let g:ycm_key_list_select_completion = ['<TAB>', '<Down>', '<Enter>']
 
 let g:tern_show_argument_hints='on_hold'
 let g:tern_map_keys=1
+
+let g:multi_cursor_exit_from_insert_mode = 0
 
 " set rtp+=$HOME/.local/lib/python2.7/site-packages/powerline/bindings/vim/
 " set rtp+=/usr/local/lib/python2.7/dist-packages/powerline/bindings/vim/
@@ -119,3 +233,5 @@ set laststatus=2
 " Use 256 colours (Use this setting only if your terminal supports 256 colours)
 set t_Co=256
 let g:airline_powerline_fonts = 1
+
+let g:NERDTreeHijackNetrw=0

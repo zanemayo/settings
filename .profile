@@ -36,3 +36,7 @@ fi
 setxkbmap -option 'caps:ctrl_modifier'
 xcape -e 'Caps_Lock=Escape'
 . /usr/share/autojump/autojump.sh 
+
+export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
+
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*

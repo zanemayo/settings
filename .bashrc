@@ -119,3 +119,25 @@ fi
 alias tmux2="TERM=xterm-256color tmux"
 export TERM=xterm-256color
 set -o vi
+source ~/.scripts/docker
+
+export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
+
+vim()
+{
+    # osx users, use stty -g
+    local STTYOPTS="$(stty --save)"
+    stty stop '' -ixoff
+    command vim "$@"
+    stty "$STTYOPTS"
+}
+
+setxkbmap -option 'caps:ctrl_modifier'
+xcape -e 'Caps_Lock=Escape'
+. /usr/share/autojump/autojump.sh 
+
+export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
+
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
+
+export PATH=$PATH:~/scripts
