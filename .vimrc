@@ -134,7 +134,9 @@ inoremap <A-l> <C-o>l
 inoremap <A-e> <C-o>e
 "inoremap <BS> <NOP>
 "inoremap <CR> <NOP>
-"
+
+"Remove all trailing whitespace by pressing F5
+nnoremap <F5> :let _s=@/<Bar>:%s/\s\+$//e<Bar>:let @/=_s<Bar><CR>
 
 " experimental
 nnoremap <C-j> 4j4<C-e>
@@ -191,7 +193,9 @@ nnoremap <Space>k :call WrapCommand('up', 'l')<CR>
 syntax on
 
 let g:tsuquyomi_disable_quickfix = 1
+let g:tsuquyomi_completion_detail = 1
 let g:syntastic_typescript_checkers = ['tsuquyomi'] " You shouldn't use 'tsc' checker.
+autocmd FileType typescript setlocal completeopt+=menu,preview
 
 set hlsearch
 set incsearch
@@ -216,6 +220,7 @@ let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 0
 let g:syntastic_check_on_wq = 1
 let g:syntastic_javascript_checkers = ['standard']
+"let g:syntastic_debug = 3
 
 let g:ycm_key_list_select_completion = ['<TAB>', '<Down>', '<Enter>']
 
