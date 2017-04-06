@@ -40,3 +40,14 @@ xcape -e 'Caps_Lock=Escape'
 export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
 
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
+
+export GOPATH=$HOME/dev/go
+export GOROOT=/usr/local/go
+export PATH="$PATH:$HOME/dev/go/bin"
+synclient TapButton1=0
+synclient TapButton2=0
+synclient TapButton3=0
+
+alias unaws='unset AWS_PROFILE; unset AWS_ACCESS_KEY_ID; unset AWS_SECRET_ACCESS_KEY; unset AWS_SESSION_TOKEN'
+alias mmgdev='eval $(unaws && platutils-switch-aws-account mmgdev zanemayo)'
+alias mmgprod='eval $(unaws && platutils-switch-aws-account mmgprod zanemayo)'

@@ -15,15 +15,16 @@ Plugin 'elzr/vim-json'
 Plugin 'racer-rust/vim-racer'
 Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
 Plugin 'editorconfig-vim'
-Plugin 'altercation/vim-colors-solarized'
+"Plugin 'altercation/vim-colors-solarized'
 Plugin 'scrooloose/nerdtree'
 Plugin 'scrooloose/syntastic'
 Plugin 'eslint/eslint'
 Plugin 'jlanzarotta/bufexplorer'
 Plugin 'rust-lang/rust.vim'
-Plugin 'vim-airline/vim-airline'
-Plugin 'vim-airline/vim-airline-themes'
-Plugin 'pangloss/vim-javascript'
+"Plugin 'vim-airline/vim-airline'
+"Plugin 'vim-airline/vim-airline-themes'
+Plugin 'itchyny/lightline.vim'
+" Plugin '844196/lightline-badwolf.vim'
 Plugin 'jelera/vim-javascript-syntax'
 Plugin 'rking/ag.vim'
 Plugin 'valloric/youcompleteme'
@@ -36,6 +37,27 @@ Plugin 'Shougo/vimproc.vim'
 Plugin 'Quramy/tsuquyomi'
 Plugin 'leafgarland/typescript-vim'
 Plugin 'ervandew/supertab'
+Plugin 'ensime/ensime-vim'
+Plugin 'derekwyatt/vim-scala'
+Plugin 'fatih/vim-go'
+Plugin 'majutsushi/tagbar'
+Plugin 'rjohnsondev/vim-compiler-go'
+Plugin 'dgryski/vim-godef'
+Plugin 'vim-jp/vim-go-extra'
+" Plugin 'jodosha/vim-godebug'
+Plugin 'OmniSharp/omnisharp-vim'
+Plugin 'scrooloose/nerdcommenter'
+Plugin 'jceb/vim-orgmode'
+Plugin 'easymotion/vim-easymotion'
+"Plugin 'mkitt/tabline.vim'
+"Plugin 'fholgado/minibufexpl.vim'
+"Plugin 'maxbrunsfeld/vim-yankstack'
+Plugin 'vim-scripts/YankRing.vim'
+Plugin 'tomasr/molokai'
+Plugin 'sjl/badwolf'
+Plugin 'gosukiwi/vim-atom-dark'
+Plugin 'nanotech/jellybeans.vim'
+Plugin 'w0ng/vim-hybrid'
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
 filetype plugin indent on    " required
@@ -50,6 +72,10 @@ filetype plugin indent on    " required
 "
 " see :h vundle for more details or wiki for FAQ
 " Put your non-Plugin stuff after this line
+set encoding=utf-8
+
+set ignorecase
+set smartcase
 
 "indentation stuff
 set smartindent
@@ -57,6 +83,7 @@ set tabstop=2
 set shiftwidth=2
 set softtabstop=2
 set expandtab
+" set softtabstop=0 noexpandtab
 set backspace=indent,eol,start
 
 set complete+=k "dictionary autocomplete
@@ -65,9 +92,9 @@ set number "view line numbers
 highlight LineNr ctermfg=grey
 
 "set listchars=tab:ÎõÎéÎõÎé,trail:~ "nicer whitespace chars
-set listchars=trail:~
+"set listchars=trail:~
 set syntax=whitespace
-set list "show whitespace
+"set list "show whitespace
 set mouse=nv "allow mouse
 
 "make copy to clipboard work in linux
@@ -84,6 +111,8 @@ set noswapfile
 set exrc "allow per folder configs
 set secure "disallow dangerous commands in per folder configs
 
+set wildignore+=*/dist/* " ctrlp ignore dist
+
 "let c='a'
 "while c <= 'z'
 "  exec "set <A-".c.">=\e".c
@@ -92,13 +121,16 @@ set secure "disallow dangerous commands in per folder configs
 "endw
 "
 "set timeout ttimeoutlen=500
+"
+tnoremap <M-.> <Esc>.
 
 inoremap \ej <C-o>j
 
 syntax enable
-set background=dark
+"set background=dark
 "let g:solarized_termcolors=256
-colorscheme solarized
+"colorscheme solarized
+colorscheme jellybeans
 inoremap jk <ESC>
 inoremap kj <ESC>
 inoremap jj <ESC>
@@ -112,7 +144,6 @@ nnoremap <Space>i <C-I>
 nnoremap <Space>o <C-O>
 nnoremap j gj
 nnoremap k gk
-nnoremap <Space>g :wa<CR>:!!<CR>
 nnoremap <TAB> <C-w>w
 nnoremap <S-TAB> <C-w>W
 nnoremap s :exec "normal i".nr2char(getchar())."\e"<CR>
@@ -124,7 +155,7 @@ nmap gt gdf'gf
 vnoremap ; :s/^\(\s*\)\/\/ \?/\1/<CR>
 vnoremap / :s/^/\/\/ /<CR>:nohlsearch<CR>
 noremap <C-s> :w
-nnoremap <Space>t :NERDTree<CR> 
+nnoremap <Space>t :NERDTreeFind<CR>
 
 " provide hjkl movements in Insert mode via the <Alt> modifier key
 inoremap <A-h> <C-o>h
@@ -134,6 +165,11 @@ inoremap <A-l> <C-o>l
 inoremap <A-e> <C-o>e
 "inoremap <BS> <NOP>
 "inoremap <CR> <NOP>
+
+" Go
+nnoremap <Space>gr :GoRun<CR>
+
+"nnoremap <Space>g :wa<CR>:!!<CR>
 
 "Remove all trailing whitespace by pressing F5
 nnoremap <F5> :let _s=@/<Bar>:%s/\s\+$//e<Bar>:let @/=_s<Bar><CR>
@@ -154,6 +190,9 @@ nnoremap ]c :cnext <CR>
 
 nnoremap <Space>k :lprevious<CR>
 
+nnoremap <Space>ov :sp ~/.vimrc<CR>
+nnoremap <Space>os :sp ~/.scratch<CR>
+
 function! CloseLocationAndQuickFix()
   :windo if &buftype == "quickfix" || &buftype == "locationlist" | lclose | endif
 endfunction
@@ -165,6 +204,9 @@ nnoremap <Space>r :TsuRenameSymbol<CR>
 nnoremap <Space>d :TsuDefinition<CR>
 nnoremap <Space>f :TsuReferences<CR>
 nnoremap <Space>s :TsuSearch 
+
+nnoremap <Space>os :vs ~/.scratch<CR>
+nnoremap <Space>ov :vs ~/.vimrc<CR>
 
 " wrap :cnext/:cprevious and :lnext/:lprevious
 function! WrapCommand(direction, prefix)
@@ -193,11 +235,11 @@ nnoremap <Space>k :call WrapCommand('up', 'l')<CR>
 syntax on
 
 let g:tsuquyomi_disable_quickfix = 1
-let g:tsuquyomi_completion_detail = 1
+"let g:tsuquyomi_completion_detail = 1
 let g:syntastic_typescript_checkers = ['tsuquyomi'] " You shouldn't use 'tsc' checker.
-autocmd FileType typescript setlocal completeopt+=menu,preview
+"autocmd FileType typescript setlocal completeopt+=menu,preview
 
-set hlsearch
+set nohlsearch
 set incsearch
 "highlight search cterm=underline
 nnoremap <Space>h :nohlsearch<CR>
@@ -206,14 +248,20 @@ set pumheight=10
 
 set hidden
 
-let g:airline#extensions#tabline#enabled = 1
-let g:airline_theme="solarized"
-set laststatus=2
+"let g:airline#extensions#tabline#enabled = 1
+"let g:airline_theme="solarized"
+"let g:airline_theme="badwolf"
+" Use 256 colours (Use this setting only if your terminal supports 256 colours)
+" set t_Co=256
+" let g:airline_powerline_fonts = 1
+"
+" set statusline+=%#warningmsg#
+" set statusline+=%{SyntasticStatuslineFlag()}
+" set statusline+=%*
+" set laststatus=2
 
-
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
+let g:lightline = { 'colorscheme': 'jellybeans' }
+"set showtabline=2
 
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
@@ -235,8 +283,27 @@ let g:multi_cursor_exit_from_insert_mode = 0
 " Always show statusline
 set laststatus=2
 
-" Use 256 colours (Use this setting only if your terminal supports 256 colours)
-set t_Co=256
-let g:airline_powerline_fonts = 1
 
 let g:NERDTreeHijackNetrw=0
+
+let g:OmniSharp_server_type = 'roslyn'
+
+" Add spaces after comment delimiters by default
+let g:NERDSpaceDelims = 1
+
+" Use compact syntax for prettified multi-line comments
+let g:NERDCompactSexyComs = 1
+
+" Align line-wise comment delimiters flush left instead of following code indentation
+let g:NERDDefaultAlign = 'left'
+
+
+nnoremap <C-_> <plug>NERDComToggleComment 
+
+let g:EasyMotion_smartcase = 1
+nmap s <Plug>(easymotion-overwin-f)
+map <Leader>j <Plug>(easymotion-j)
+map <Leader>k <Plug>(easymotion-k)
+
+let g:yankring_replace_n_pkey = '<M-p>'
+let g:yankring_replace_n_nkey = '<M-n>'
