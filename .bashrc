@@ -142,3 +142,7 @@ export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
 
 export PATH=$PATH:~/scripts
 export PATH="/usr/lib/jvm/default-java/bin:$PATH"
+
+v () {
+  nvim ${1:-.}
+}
