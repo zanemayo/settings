@@ -137,8 +137,8 @@ values."
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
-   dotspacemacs-default-font '("Hack"
-                               :size 18
+   dotspacemacs-default-font '("Fira Mono for Powerline Regular"
+                               :size 16
                                :weight normal
                                :width normal
                                :powerline-scale 1.1)
@@ -312,6 +312,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (setq-default js2-basic-offset 2
                 js-indent-level 2
                 js2-strict-missing-semi-warning)
+  (setq-default typescript-indent-level 2)
   )
 
 (defun dotspacemacs/user-config ()
@@ -323,14 +324,28 @@ explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
   ;; (define-key evil-normal-state-map (kbd <tab>) 'other-window)
 
+  ;;(xclip-mode 1)
+  ;;(turn-on-xclip)
   (defun other-window-backwards () (interactive) (other-window -1))
   (define-key evil-normal-state-map (kbd "<backtab>") 'other-window-backwards)
   (define-key evil-normal-state-map (kbd "C-k") (kbd "7k"))
   (define-key evil-normal-state-map (kbd "C-j") (kbd "7j"))
-  ((js2-mode
-    (flycheck-checker . javascript-standard)))
+  ;((js2-mode
+  ;  (flycheck-checker . javascript-standard)))
   (define-key evil-normal-state-map (kbd "C-n") 'mc/mark-next-like-this-word)
   (define-key evil-normal-state-map (kbd "C-x") 'mc/skip-to-next-like-this)
 )
 
 ;; Do not write anything past this comment. This is where Emacs will
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(show-paren-match ((t (:background "#29422d" :underline nil)))))
