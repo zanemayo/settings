@@ -51,3 +51,5 @@ synclient TapButton3=0
 alias unaws='unset AWS_PROFILE; unset AWS_ACCESS_KEY_ID; unset AWS_SECRET_ACCESS_KEY; unset AWS_SESSION_TOKEN'
 alias mmgdev='eval $(unaws && platutils-switch-aws-account mmgdev zanemayo)'
 alias mmgprod='eval $(unaws && platutils-switch-aws-account mmgprod zanemayo)'
+alias tmux2="TERM=xterm-256color tmux"
+
