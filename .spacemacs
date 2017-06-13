@@ -31,6 +31,8 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     csv
+     ruby
      go
      yaml
      html
@@ -43,7 +45,7 @@ values."
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
      helm
-     auto-completion
+     (auto-completion :disabled-for org git)
      ;; better-defaults
      emacs-lisp
      git
@@ -51,9 +53,10 @@ values."
      org
      csharp
      haskell
-     ;; (shell :variables
-     ;;        shell-default-height 30
-     ;;        shell-default-position 'bottom)
+     rust
+     (shell :variables
+            shell-default-height 30
+            shell-default-position 'bottom)
      ;; spell-checking
      syntax-checking
      version-control
@@ -64,7 +67,8 @@ values."
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages '(ujelly-theme
-                                      base16-theme)
+                                      base16-theme
+                                      esv)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -136,9 +140,9 @@ values."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(spacemacs-dark
+   dotspacemacs-themes '(ujelly
+                         spacemacs-dark
                          spacemacs-light
-                         ujelly
                          solarized-light
                          anti-zeburn
                          )
@@ -314,7 +318,7 @@ executes.
  This function is mostly useful for variables that need to be set
 before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
-(setq tramp-ssh-controlmaster-options
+  (setq tramp-ssh-controlmaster-options
       "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
   (setq scroll-conservatively 101) ;; move minimum when cursor exits view, instead of recentering
   (setq mouse-wheel-scroll-amount '(1)) ;; mouse scroll moves 1 line at a time, instead of 5 lines
@@ -322,6 +326,11 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (setq-default evil-escape-key-sequence "jk")
   (setq-default js2-basic-offset 2
                 js-indent-level 2
+                css-indent-offset 2
+                web-mode-markup-indent-offset 2
+                web-mode-css-indent-offset 2
+                web-mode-code-indent-offset 2
+                web-mode-attr-indent-offset 2
                 js2-strict-missing-semi-warning)
   (setq-default typescript-indent-level 2)
   (setq omnisharp-server-executable-path "/home/zane/dev/omnisharp/Omnisharp")
@@ -353,8 +362,14 @@ before packages are loaded. If you are unsure, you should try in setting them in
           ))
   (require 'uniquify)
   (setq uniquify-buffer-name-style 'reverse)
-  (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.5))
-  )
+  (setq flycheck-display-errors-delay 0.5)
+  (setq flycheck-pos-tip-timeout 10)
+(with-eval-after-load 'ox-latex
+  (setq-default org-format-latex-options (plist-put org-format-latex-options :scale 1.5))
+     (add-to-list 'org-latex-classes
+                  '("mathtools"
+                    )))
+)
 
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.
@@ -363,12 +378,13 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
-  ;; (define-key evil-normal-state-map (kbd <tab>) 'other-window)
-
+  ;;(define-key evil-normal-state-map (kbd <tab>) 'other-window)
+  (spacemacs/set-leader-keys "<tab>" 'other-window)
   ;;(xclip-mode 1)
   ;;(turn-on-xclip)
+  (golden-ratio-mode 1)
   (defun other-window-backwards () (interactive) (other-window -1))
-  (define-key evil-normal-state-map (kbd "<backtab>") 'previous-multiframe-window)
+  (define-key evil-normal-state-map (kbd "<backtab>") 'other-window-backwards)
   (define-key evil-normal-state-map (kbd "C-k") (kbd "7k"))
   (define-key evil-normal-state-map (kbd "C-j") (kbd "7j"))
   (define-key evil-motion-state-map "j" 'evil-next-visual-line)
@@ -382,8 +398,64 @@ you should place your code here."
   (add-hook 'smartparens-enabled-hook #'spacemacs/toggle-smartparens-off)
   (add-hook 'smartparens-enabled-hook #'turn-off-show-smartparens-mode)
   (spacemacs/toggle-smartparens-globally-off)
+  (evil-leader/set-key
+    "q q" 'spacemacs/frame-killer)
   (with-eval-after-load "company"
     (global-set-key (kbd "C-SPC") 'company-complete))
+
+  (global-set-key (kbd "C-+") 'text-scale-increase)
+  (global-set-key (kbd "C--") 'text-scale-decrease)
+  (global-set-key (kbd "C-0") 'text-scale-mode)
+
+  (with-eval-after-load 'web-mode
+    (add-to-list 'web-mode-indentation-params '("lineup-args" . nil))
+    (add-to-list 'web-mode-indentation-params '("lineup-concats" . nil))
+    (add-to-list 'web-mode-indentation-params '("lineup-calls" . nil)))
+
+  (defun flycheck-pos-tip-error-messages (errors)
+    "Display ERRORS, using a graphical tooltip on GUI frames."
+    (when errors
+      (if (display-graphic-p)
+          (let ((message (mapconcat #'flycheck-error-format-message-and-id
+                                    errors "\n\n"))
+                (line-height (car (window-line-height))))
+            (pos-tip-show message nil nil nil flycheck-pos-tip-timeout
+                          nil nil
+                          ;; Add a little offset to the tooltip to move it away
+                          ;; from the corresponding text in the buffer.  We
+                          ;; explicitly take the line height into account because
+                          ;; pos-tip computes the offset from the top of the line
+                          ;; apparently.
+                          15 (-  30)))
+        (funcall flycheck-pos-tip-display-errors-tty-function errors))))
+  (add-to-list 'display-buffer-alist
+               `(,(rx bos "*Flycheck errors*" eos)
+                 (display-buffer-reuse-window
+                  display-buffer-in-side-window)
+                 (reusable-frames . visible)
+                 (side            . bottom)
+                 (window-height   . 0.1)))
+  (evil-leader/set-key-for-mode 'typescript-mode
+    "d" 'tide-jump-to-definition
+    "b" 'tide-jump-back
+    "mhd" 'tide-documentation-at-point
+    "f" 'tide-references
+    "mgn" 'tide-find-next-reference
+    "mgp" 'tide-find-previous-reference
+    "msr" 'tide-restart-server
+                                        ;"rr" 'tide-rename-symbol
+    )
+  (require 'esv)
+  (add-hook 'text-mode-hook 'turn-on-esv-mode)
+                                        ; the following keys should be mapped to whatever works best for
+                                        ; you:
+                                        ; C-c e looks up a passage and displays it in a pop-up window
+  (define-key global-map [(control c) ?e] 'esv-passage)
+                                        ; C-c i inserts an ESV passage in plain-text format at point
+  (define-key global-map [(control c) ?i] 'esv-insert-passage)
+                                        ; If you don't want to use customize, you can set this for casual
+                                        ; usage (but read http://www.esvapi.org/ for license):
+  (setq esv-key "IP")
 )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -396,14 +468,15 @@ you should place your code here."
    [default bold shadow italic underline bold bold-italic bold])
  '(ansi-color-names-vector
    ["#eee8d5" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#839496"])
- '(ansi-term-color-vector
-   [unspecified "#151515" "#fb9fb1" "#acc267" "#ddb26f" "#6fc2ef" "#e1a3ee" "#6fc2ef" "#d0d0d0"])
  '(beacon-color "#F8BBD0")
  '(compilation-message-face (quote default))
  '(cua-global-mark-cursor-color "#2aa198")
  '(cua-normal-cursor-color "#657b83")
  '(cua-overwrite-cursor-color "#b58900")
  '(cua-read-only-cursor-color "#859900")
+ '(custom-safe-themes
+   (quote
+    ("ecf7415335ef82a868c4e5f82909344cc72af8d9f2adfdbb7121e4d21910d9a2" default)))
  '(diary-entry-marker (quote font-lock-variable-name-face))
  '(emms-mode-line-icon-image-cache
    (quote
@@ -540,4 +613,5 @@ static char *gnus-pointer[] = {
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(show-paren-match ((t (:foreground "#d33682" :underline nil :background nil :weight bold))))
- '(sp-show-pair-match-face ((t (:foreground "#d33682" :background nil :weight bold)))))
+ '(sp-show-pair-match-face ((t (:foreground "#d33682" :background nil :weight bold))))
+ '(term ((t (:inherit default :background "#000000" :foreground "#ffffff")))))
