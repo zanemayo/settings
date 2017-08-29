@@ -31,6 +31,8 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     php
+     lua
      csv
      ruby
      go
@@ -39,14 +41,19 @@ values."
      javascript
      react
      typescript
+     racket
+     scheme
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
      helm
-     (auto-completion :disabled-for org git)
+     (auto-completion
+      :variables auto-completion-tab-key-behavior nil
+      :disabled-for org git)
      ;; better-defaults
+     ;; tabbar
      emacs-lisp
      git
      markdown
@@ -68,7 +75,8 @@ values."
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages '(ujelly-theme
                                       base16-theme
-                                      esv)
+                                      paredit
+                                      evil-lispy)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -115,7 +123,7 @@ values."
    ;; with `:variables' keyword (similar to layers). Check the editing styles
    ;; section of the documentation for details on available variables.
    ;; (default 'vim)
-   dotspacemacs-editing-style 'vim
+   dotspacemacs-editing-style 'emacs
    ;; If non nil output loading progress in `*Messages*' buffer. (default nil)
    dotspacemacs-verbose-loading nil
    ;; Specify the startup banner. Default value is `official', it displays
@@ -140,7 +148,8 @@ values."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(ujelly
+   dotspacemacs-themes '(tango-plus
+                         ujelly
                          spacemacs-dark
                          spacemacs-light
                          solarized-light
@@ -347,11 +356,13 @@ before packages are loaded. If you are unsure, you should try in setting them in
           evil-next-line
           evil-normal-state
           evil-previous-line
+          evil-append-line
           forward-sentence
           kill-sentence
           org-self-insert-command
           sp-backward-delete-char
           sp-delete-char
+
           sp-remove-active-pair-overlay
           ))
 
@@ -364,12 +375,21 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (setq uniquify-buffer-name-style 'reverse)
   (setq flycheck-display-errors-delay 0.5)
   (setq flycheck-pos-tip-timeout 10)
+  (global-set-key (kbd "TAB") 'hippie-expand)
+  (setq-default dotspacemacs-configuration-layers
+                '((auto-completion :variables
+                                   auto-completion-enable-snippets-in-popup t)))
 (with-eval-after-load 'ox-latex
   (setq-default org-format-latex-options (plist-put org-format-latex-options :scale 1.5))
      (add-to-list 'org-latex-classes
                   '("mathtools"
                     )))
-)
+  ;; (setq golden-ratio-adjust-factor 4
+  ;;       golden-ratio-wide-adjust-factor .8)
+;; Holy Mode
+(setq-default cursor-type '(box))
+
+  )
 
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.
@@ -382,30 +402,46 @@ you should place your code here."
   (spacemacs/set-leader-keys "<tab>" 'other-window)
   ;;(xclip-mode 1)
   ;;(turn-on-xclip)
-  (golden-ratio-mode 1)
+  ;; (golden-ratio-mode 1)
   (defun other-window-backwards () (interactive) (other-window -1))
-  (define-key evil-normal-state-map (kbd "<backtab>") 'other-window-backwards)
+  (defun other-and-maximize-window () (interactive) (other-window 1) (spacemacs/enlarge-window-horizontally 1000))
+  (defun other-backwards-and-maximize-window () (interactive) (other-window-backwards) (spacemacs/enlarge-window-horizontally 1000))
+
+  (define-key evil-normal-state-map (kbd "<backtab>") 'other-backwards-and-maximize-window)
+  (define-key evil-normal-state-map (kbd "<C-tab>") 'other-window)
+  (define-key evil-normal-state-map (kbd "<tab>") 'other-and-maximize-window)
   (define-key evil-normal-state-map (kbd "C-k") (kbd "7k"))
   (define-key evil-normal-state-map (kbd "C-j") (kbd "7j"))
   (define-key evil-motion-state-map "j" 'evil-next-visual-line)
   (define-key evil-motion-state-map "k" 'evil-previous-visual-line)
+  (define-key evil-normal-state-map (kbd "s") 'evil-avy-goto-char)
   ;((js2-mode
   ;  (flycheck-checker . javascript-standard)))
   (define-key evil-normal-state-map (kbd "C-n") 'mc/mark-next-like-this-word)
   (define-key evil-normal-state-map (kbd "C-x") 'mc/skip-to-next-like-this)
+  ;; (define-key evil-motion-state-map (kbd "]]") 'tabbar-forward)
+  ;; (define-key evil-motion-state-map (kbd "[[") 'tabbar-backward)
   (global-hl-line-mode -1)
 
   (add-hook 'smartparens-enabled-hook #'spacemacs/toggle-smartparens-off)
   (add-hook 'smartparens-enabled-hook #'turn-off-show-smartparens-mode)
   (spacemacs/toggle-smartparens-globally-off)
+  (define-key evil-normal-state-map (kbd ", w") 'save-buffer)
+  (define-key evil-normal-state-map (kbd ", q") 'kill-buffer-and-window)
   (evil-leader/set-key
     "q q" 'spacemacs/frame-killer)
-  (with-eval-after-load "company"
-    (global-set-key (kbd "C-SPC") 'company-complete))
 
   (global-set-key (kbd "C-+") 'text-scale-increase)
   (global-set-key (kbd "C--") 'text-scale-decrease)
   (global-set-key (kbd "C-0") 'text-scale-mode)
+
+  ;; (require 'company)
+  (global-company-mode)
+  (setq company-idle-delay 0)
+  (setq company-minimum-prefix-length 2)
+  (setq company-selection-wrap-around t)
+  ;; (with-eval-after-load "company"
+    ;; (global-set-key (kbd "C-SPC") 'company-complete))
 
   (with-eval-after-load 'web-mode
     (add-to-list 'web-mode-indentation-params '("lineup-args" . nil))
@@ -445,17 +481,11 @@ you should place your code here."
     "msr" 'tide-restart-server
                                         ;"rr" 'tide-rename-symbol
     )
-  (require 'esv)
-  (add-hook 'text-mode-hook 'turn-on-esv-mode)
-                                        ; the following keys should be mapped to whatever works best for
-                                        ; you:
-                                        ; C-c e looks up a passage and displays it in a pop-up window
-  (define-key global-map [(control c) ?e] 'esv-passage)
-                                        ; C-c i inserts an ESV passage in plain-text format at point
-  (define-key global-map [(control c) ?i] 'esv-insert-passage)
-                                        ; If you don't want to use customize, you can set this for casual
-                                        ; usage (but read http://www.esvapi.org/ for license):
-  (setq esv-key "IP")
+
+  ;; Org Mode
+  (evil-leader/set-key-for-mode 'org-mode
+    "<tab>" 'org-cycle)
+
 )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -468,6 +498,8 @@ you should place your code here."
    [default bold shadow italic underline bold bold-italic bold])
  '(ansi-color-names-vector
    ["#eee8d5" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#839496"])
+ '(ansi-term-color-vector
+   [unspecified "#1e1e1e" "#cf6a4c" "#8f9d6a" "#f9ee98" "#7587a6" "#9b859d" "#7587a6" "#a7a7a7"] t)
  '(beacon-color "#F8BBD0")
  '(compilation-message-face (quote default))
  '(cua-global-mark-cursor-color "#2aa198")
@@ -566,6 +598,7 @@ static char *gnus-pointer[] = {
  '(pdf-view-midnight-colors (quote ("#232333" . "#c7c7c7")))
  '(pos-tip-background-color "#eee8d5")
  '(pos-tip-foreground-color "#586e75")
+ '(send-mail-function (quote mailclient-send-it))
  '(show-paren-delay 0)
  '(show-paren-mode t)
  '(show-smartparens-global-mode t)
@@ -574,9 +607,9 @@ static char *gnus-pointer[] = {
  '(sml/active-foreground-color "#ecf0f1")
  '(sml/inactive-background-color "#dfe4ea")
  '(sml/inactive-foreground-color "#34495e")
- '(tabbar-background-color "#ffffff")
  '(term-default-bg-color "#fdf6e3")
  '(term-default-fg-color "#657b83")
+ '(typescript-auto-indent-flag nil)
  '(vc-annotate-background nil)
  '(vc-annotate-background-mode nil)
  '(vc-annotate-color-map
@@ -612,6 +645,7 @@ static char *gnus-pointer[] = {
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(default ((t (:background nil))))
  '(show-paren-match ((t (:foreground "#d33682" :underline nil :background nil :weight bold))))
  '(sp-show-pair-match-face ((t (:foreground "#d33682" :background nil :weight bold))))
  '(term ((t (:inherit default :background "#000000" :foreground "#ffffff")))))
