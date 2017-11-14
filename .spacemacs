@@ -31,7 +31,8 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
-     php
+     python
+;;     php
      lua
      csv
      ruby
@@ -77,6 +78,7 @@ values."
                                       base16-theme
                                       paredit
                                       evil-lispy)
+                                      ;;rjsx-mode)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -112,7 +114,7 @@ values."
    ;; when the current branch is not `develop'. Note that checking for
    ;; new versions works via git commands, thus it calls GitHub services
    ;; whenever you start Emacs. (default nil)
-   dotspacemacs-check-for-update nil
+   dotspacemacs-check-for-update t
    ;; If non-nil, a form that evaluates to a package directory. For example, to
    ;; use different package directories for different Emacs versions, set this
    ;; to `emacs-version'.
@@ -327,12 +329,24 @@ executes.
  This function is mostly useful for variables that need to be set
 before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
+
+  ;; Cursor
+  (setq-default cursor-type 'box)
+
+  (setq avy-keys (number-sequence ?A ?Z)) (setq avy-translate-char-function #'upcase)
+
+  (spacemacs|use-package-add-hook org
+    :pre-init
+    (package-initialize)
+    )
+  (push '("melpa-stable" . "stable.melpa.org/packages/") configuration-layer--elpa-archives)
+  (push '(helm . "melpa-stable") package-pinned-packages)
   (setq tramp-ssh-controlmaster-options
       "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
   (setq scroll-conservatively 101) ;; move minimum when cursor exits view, instead of recentering
   (setq mouse-wheel-scroll-amount '(1)) ;; mouse scroll moves 1 line at a time, instead of 5 lines
   (setq mouse-wheel-progressive-speed nil) ;; on a long mouse scroll keep scrolling by 1 line
-  (setq-default evil-escape-key-sequence "jk")
+  ;; (setq-default evil-escape-key-sequence "jk")
   (setq-default js2-basic-offset 2
                 js-indent-level 2
                 css-indent-offset 2
@@ -342,52 +356,50 @@ before packages are loaded. If you are unsure, you should try in setting them in
                 web-mode-attr-indent-offset 2
                 js2-strict-missing-semi-warning)
   (setq-default typescript-indent-level 2)
-  (setq omnisharp-server-executable-path "/home/zane/dev/omnisharp/Omnisharp")
-  (setq mc/cmds-to-run-for-all
-        '(
-          electric-newline-and-maybe-indent
-          evil-backward-char
-          evil-delete-char
-          evil-escape-emacs-state
-          evil-escape-insert-state
-          evil-exit-emacs-state
-          evil-forward-char
-          evil-insert
-          evil-next-line
-          evil-normal-state
-          evil-previous-line
-          evil-append-line
-          forward-sentence
-          kill-sentence
-          org-self-insert-command
-          sp-backward-delete-char
-          sp-delete-char
+  ;; (setq omnisharp-server-executable-path "/home/zane/dev/omnisharp/Omnisharp")
+  ;; (setq mc/cmds-to-run-for-all
+  ;;       '(
+  ;;         electric-newline-and-maybe-indent
+  ;;         evil-backward-char
+  ;;         evil-delete-char
+  ;;         evil-escape-emacs-state
+  ;;         evil-escape-insert-state
+  ;;         evil-exit-emacs-state
+  ;;         evil-forward-char
+  ;;         evil-insert
+  ;;         evil-next-line
+  ;;         evil-normal-state
+  ;;         evil-previous-line
+  ;;         evil-append-line
+  ;;         forward-sentence
+  ;;         kill-sentence
+  ;;         org-self-insert-command
+  ;;         sp-backward-delete-char
+  ;;         sp-delete-char
 
-          sp-remove-active-pair-overlay
-          ))
+  ;;         sp-remove-active-pair-overlay
+  ;;         ))
 
-  (setq mc/cmds-to-run-once
-        '(
-          helm-M-x
-          spacemacs/default-pop-shell
-          ))
+  ;; (setq mc/cmds-to-run-once
+  ;;       '(
+  ;;         helm-M-x
+  ;;         spacemacs/default-pop-shell
+  ;;         ))
   (require 'uniquify)
   (setq uniquify-buffer-name-style 'reverse)
   (setq flycheck-display-errors-delay 0.5)
   (setq flycheck-pos-tip-timeout 10)
-  (global-set-key (kbd "TAB") 'hippie-expand)
+  ;; (global-set-key (kbd "TAB") 'hippie-expand)
   (setq-default dotspacemacs-configuration-layers
                 '((auto-completion :variables
                                    auto-completion-enable-snippets-in-popup t)))
-(with-eval-after-load 'ox-latex
-  (setq-default org-format-latex-options (plist-put org-format-latex-options :scale 1.5))
-     (add-to-list 'org-latex-classes
-                  '("mathtools"
-                    )))
+  (with-eval-after-load 'ox-latex
+    (setq-default org-format-latex-options (plist-put org-format-latex-options :scale 1.5))
+      (add-to-list 'org-latex-classes
+                   '("mathtools")))
+
   ;; (setq golden-ratio-adjust-factor 4
   ;;       golden-ratio-wide-adjust-factor .8)
-;; Holy Mode
-(setq-default cursor-type '(box))
 
   )
 
@@ -399,10 +411,20 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
   ;;(define-key evil-normal-state-map (kbd <tab>) 'other-window)
+  (require 'helm-bookmark)
+  (setq js-indent-align-list-continuation nil)
+  (setq-default js2-indent-hook (lambda (list index)
+                                  (debug)
+                                  (message "logging ZANE ..........!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ")
+                                  nil))
+
   (spacemacs/set-leader-keys "<tab>" 'other-window)
   ;;(xclip-mode 1)
   ;;(turn-on-xclip)
   ;; (golden-ratio-mode 1)
+  ;;  (global-hl-line-mode -1)
+
+  ;; VIM
   (defun other-window-backwards () (interactive) (other-window -1))
   (defun other-and-maximize-window () (interactive) (other-window 1) (spacemacs/enlarge-window-horizontally 1000))
   (defun other-backwards-and-maximize-window () (interactive) (other-window-backwards) (spacemacs/enlarge-window-horizontally 1000))
@@ -421,7 +443,6 @@ you should place your code here."
   (define-key evil-normal-state-map (kbd "C-x") 'mc/skip-to-next-like-this)
   ;; (define-key evil-motion-state-map (kbd "]]") 'tabbar-forward)
   ;; (define-key evil-motion-state-map (kbd "[[") 'tabbar-backward)
-  (global-hl-line-mode -1)
 
   (add-hook 'smartparens-enabled-hook #'spacemacs/toggle-smartparens-off)
   (add-hook 'smartparens-enabled-hook #'turn-off-show-smartparens-mode)
@@ -431,18 +452,15 @@ you should place your code here."
   (evil-leader/set-key
     "q q" 'spacemacs/frame-killer)
 
-  (global-set-key (kbd "C-+") 'text-scale-increase)
-  (global-set-key (kbd "C--") 'text-scale-decrease)
-  (global-set-key (kbd "C-0") 'text-scale-mode)
 
-  ;; (require 'company)
-  (global-company-mode)
-  (setq company-idle-delay 0)
+  ;; (global-company-mode)
+  ;; (setq company-idle-delay 0)
   (setq company-minimum-prefix-length 2)
-  (setq company-selection-wrap-around t)
+  ;; (setq company-selection-wrap-around t)
   ;; (with-eval-after-load "company"
     ;; (global-set-key (kbd "C-SPC") 'company-complete))
 
+  ;; We want 2 space indent everywhere
   (with-eval-after-load 'web-mode
     (add-to-list 'web-mode-indentation-params '("lineup-args" . nil))
     (add-to-list 'web-mode-indentation-params '("lineup-concats" . nil))
@@ -483,9 +501,137 @@ you should place your code here."
     )
 
   ;; Org Mode
-  (evil-leader/set-key-for-mode 'org-mode
-    "<tab>" 'org-cycle)
+  ;; (evil-leader/set-key-for-mode 'org-mode
+  ;;   "<tab>" 'org-cycle)
 
+  ;; js indent fix
+;;   (eval-after-load "js"
+;; '(defun js--proper-indentation (parse-status)
+;;    "Return the proper indentation for the current line."
+;;    (debug)
+;;   (save-excursion
+;;     (back-to-indentation)
+;;     (cond ((nth 4 parse-status)    ; inside comment
+;;            (js--get-c-offset 'c (nth 8 parse-status)))
+;;           ((nth 3 parse-status) 0) ; inside string
+;;           ((eq (char-after) ?#) 0)
+;;           ((save-excursion (js--beginning-of-macro)) 4)
+;;           ;; Indent array comprehension continuation lines specially.
+;;           ((let ((bracket (nth 1 parse-status))
+;;                  beg)
+;;              (and bracket
+;;                   (not (js--same-line bracket))
+;;                   (setq beg (js--indent-in-array-comp bracket))
+;;                   ;; At or after the first loop?
+;;                   (>= (point) beg)
+;;                   (js--array-comp-indentation bracket beg))))
+;;           ((js--ctrl-statement-indentation))
+;;           ((js--multi-line-declaration-indentation))
+;;           ((nth 1 parse-status)
+;; 	   ;; A single closing paren/bracket should be indented at the
+;; 	   ;; same level as the opening statement. Same goes for
+;; 	   ;; "case" and "default".
+;;            (let ((same-indent-p (looking-at "[]})]"))
+;;                  (switch-keyword-p (looking-at "default\\_>\\|case\\_>[^:]"))
+;;                  (continued-expr-p (js--continued-expression-p)))
+;;              (goto-char (nth 1 parse-status)) ; go to the opening char
+;;              (if (or t (looking-at "[({[]\\s-*\\(/[/*]\\|$\\)"))
+;;                  (progn ; nothing following the opening paren/bracket
+;;                    (skip-syntax-backward " ")
+;;                    (when (eq (char-before) ?\)) (backward-list))
+;;                    (back-to-indentation)
+;;                    (let* ((in-switch-p (unless same-indent-p
+;;                                          (looking-at "\\_<switch\\_>")))
+;;                           (same-indent-p (or same-indent-p
+;;                                              (and switch-keyword-p
+;;                                                   in-switch-p)))
+;;                           (indent
+;;                            (cond (same-indent-p
+;;                                   (current-column))
+;;                                  (continued-expr-p
+;;                                   (+ (current-column) (* 2 js-indent-level)
+;;                                      js-expr-indent-offset))
+;;                                  (t
+;;                                   (+ (current-column) js-indent-level
+;;                                      (pcase (char-after (nth 1 parse-status))
+;;                                        (?\( js-paren-indent-offset)
+;;                                        (?\[ js-square-indent-offset)
+;;                                        (?\{ js-curly-indent-offset)))))))
+;;                      (if in-switch-p
+;;                          (+ indent js-switch-indent-offset)
+;;                        indent)))
+;;                ;; If there is something following the opening
+;;                ;; paren/bracket, everything else should be indented at
+;;                ;; the same level.
+;;                (unless same-indent-p
+;;                  (forward-char)
+;;                  (skip-chars-forward " \t"))
+;;                (current-column))))
+
+;;           ((js--continued-expression-p)
+;;            (+ js-indent-level js-expr-indent-offset))
+;;           (t 0)))))
+
+  ;; Keys
+  (global-set-key (kbd "C-+") 'text-scale-increase)
+  (global-set-key (kbd "C--") 'text-scale-decrease)
+  (global-set-key (kbd "C-0") 'text-scale-mode)
+  (global-set-key (kbd "M-n")
+                  (lambda () (interactive) (forward-line  7)))
+  (global-set-key (kbd "M-p")
+                  (lambda () (interactive) (forward-line -7)))
+  ;;  (global-set-key (kbd "C-t") 'helm-projectile-find-file)
+  ;;  (global-set-key (kbd "C-*") (kbd "M-s . C-s"))
+  (global-set-key (kbd "C-*") 'evil-search-word-forward)
+  (bind-keys*
+   ("C-t" . helm-projectile-find-file)
+   ("C-o" . other-window)
+   ("C-;" . avy-goto-char)
+;;   ("<backtab>" . indent-rigidly-left)
+;;   ("<tab>" . indent-rigidly-right)
+   ("<f6>" . profiler-start)
+   ("<f7>" . profiler-report))
+
+  ;; ----------------------------------
+  ;; Remap the menu key to be a leader:
+  ;; on Linux, the menu/apps key syntax is <menu>
+  ;; on Windows, the menu/apps key syntax is <apps>
+  ;; make the syntax equal
+  (define-key key-translation-map (kbd "<apps>") (kbd "<menu>"))
+
+  (progn
+    ;; define set of key sequences
+    (define-prefix-command 'my-leader-key-map)
+    ;; ----------------------------------
+
+    ;; Some custom
+    (define-key my-leader-key-map (kbd "<tab>") 'other-window)
+
+    ;; Some defaults, i'll see if I ever use them
+    (define-key my-leader-key-map (kbd "RET") 'execute-extended-command)
+    (define-key my-leader-key-map (kbd "<menu>") 'exchange-point-and-mark)
+    (define-key my-leader-key-map (kbd "7") 'dired-jump)
+    (define-key my-leader-key-map (kbd "9") 'ispell-word)
+    (define-key my-leader-key-map (kbd "a") 'mark-whole-buffer)
+    (define-key my-leader-key-map (kbd "b") 'end-of-buffer)
+    (define-key my-leader-key-map (kbd "d") 'mc/mark-more-like-this-extended)
+    (define-key my-leader-key-map (kbd "f") 'mc/mark-all-like-this-dwim)
+    (define-key my-leader-key-map (kbd "t") 'spacemacs/helm-project-smart-do-search)
+    (define-key my-leader-key-map (kbd "p") 'query-replace))
+
+  ;; make the menu key as leader key
+  (global-set-key (kbd "<menu>") 'my-leader-key-map)
+  ;; ----------------------------------
+
+  (define-key isearch-mode-map [remap isearch-delete-char] 'isearch-del-char)
+
+  (defadvice isearch-search (after isearch-no-fail activate)
+    (unless isearch-success
+      (ad-disable-advice 'isearch-search 'after 'isearch-no-fail)
+      (ad-activate 'isearch-search)
+      (isearch-repeat (if isearch-forward 'forward))
+      (ad-enable-advice 'isearch-search 'after 'isearch-no-fail)
+      (ad-activate 'isearch-search)))
 )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -494,12 +640,10 @@ you should place your code here."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(ansi-color-faces-vector
+ '(ansi-color-face-vector
    [default bold shadow italic underline bold bold-italic bold])
  '(ansi-color-names-vector
    ["#eee8d5" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#839496"])
- '(ansi-term-color-vector
-   [unspecified "#1e1e1e" "#cf6a4c" "#8f9d6a" "#f9ee98" "#7587a6" "#9b859d" "#7587a6" "#a7a7a7"] t)
  '(beacon-color "#F8BBD0")
  '(compilation-message-face (quote default))
  '(cua-global-mark-cursor-color "#2aa198")
@@ -590,11 +734,17 @@ static char *gnus-pointer[] = {
  '(hl-paren-background-colors (quote ("#2492db" "#95a5a6" nil)))
  '(hl-paren-colors (quote ("#ecf0f1" "#ecf0f1" "#c0392b")))
  '(hl-sexp-background-color "#efebe9")
+ '(js-indent-align-list-continuation t)
+ '(js2-mode-assume-strict t)
+ '(js2-strict-trailing-comma-warning nil)
  '(magit-diff-use-overlays nil)
  '(nrepl-message-colors
    (quote
     ("#dc322f" "#cb4b16" "#b58900" "#546E00" "#B4C342" "#00629D" "#2aa198" "#d33682" "#6c71c4")))
  '(org-download-edit-cmd "pinta %s")
+ '(package-selected-packages
+   (quote
+    (web-completion-data helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make helm-hoogle helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag helm helm-core zonokai-theme zenburn-theme zen-and-art-theme yapfify yaml-mode xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toml-mode toc-org tide tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spaceline spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode shell-pop seti-theme scss-mode sass-mode rvm ruby-tools ruby-test-mode rubocop rspec-mode robe reverse-theme restart-emacs request rbenv rake rainbow-delimiters railscasts-theme racket-mode racer pyvenv pytest pyenv-mode py-isort purple-haze-theme pug-mode professional-theme popwin planet-theme pip-requirements phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pastels-on-dark-theme paredit paradox orgit organic-green-theme org-projectile org-present org-pomodoro org-download org-bullets open-junk-file omtose-phellack-theme omnisharp oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme neotree naquadah-theme mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme moe-theme mmm-mode minitest minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow madhat2r-theme macrostep lush-theme lua-mode lorem-ipsum livid-mode live-py-mode linum-relative link-hint light-soap-theme less-css-mode json-mode js2-refactor js-doc jbeans-theme jazz-theme ir-black-theme intero inkpot-theme info+ indent-guide hy-mode hungry-delete htmlize hlint-refactor hl-todo hindent highlight-numbers highlight-indentation hide-comnt heroku-theme hemisu-theme help-fns+ hc-zenburn-theme haskell-snippets gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme google-translate golden-ratio go-guru go-eldoc gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md geiser gandalf-theme fuzzy flycheck-rust flycheck-pos-tip flycheck-haskell flx-ido flatui-theme flatland-theme firebelly-theme fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lispy evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme eshell-z eshell-prompt-extras esh-help emmet-mode elisp-slime-nav dumb-jump dracula-theme django-theme diff-hl define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cython-mode cyberpunk-theme csv-mode company-web company-tern company-statistics company-go company-ghci company-ghc company-cabal company-anaconda column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized coffee-mode cmm-mode clues-theme clean-aindent-mode chruby cherry-blossom-theme cargo busybee-theme bundler bubbleberry-theme birds-of-paradise-plus-theme base16-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-link ace-jump-helm-line ac-ispell)))
  '(pdf-view-midnight-colors (quote ("#232333" . "#c7c7c7")))
  '(pos-tip-background-color "#eee8d5")
  '(pos-tip-foreground-color "#586e75")
