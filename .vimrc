@@ -27,6 +27,7 @@ Plugin 'itchyny/lightline.vim'
 " Plugin '844196/lightline-badwolf.vim'
 Plugin 'jelera/vim-javascript-syntax'
 Plugin 'rking/ag.vim'
+Plugin 'Chun-Yang/vim-action-ag'
 Plugin 'valloric/youcompleteme'
 " Plugin 'ternjs/tern_for_vim'
 Plugin 'tpope/vim-surround'
@@ -48,6 +49,7 @@ Plugin 'vim-jp/vim-go-extra'
 Plugin 'OmniSharp/omnisharp-vim'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'jceb/vim-orgmode'
+Plugin 'tpope/vim-speeddating'
 Plugin 'easymotion/vim-easymotion'
 "Plugin 'mkitt/tabline.vim'
 "Plugin 'fholgado/minibufexpl.vim'
@@ -58,6 +60,8 @@ Plugin 'sjl/badwolf'
 Plugin 'gosukiwi/vim-atom-dark'
 Plugin 'nanotech/jellybeans.vim'
 Plugin 'w0ng/vim-hybrid'
+Plugin 'tpope/vim-unimpaired'
+Plugin 'tpope/vim-dispatch'
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
 filetype plugin indent on    " required
@@ -145,7 +149,8 @@ nnoremap <Space>o <C-O>
 nnoremap j gj
 nnoremap k gk
 nnoremap <TAB> <C-w>w
-nnoremap <S-TAB> <C-w>W
+nnoremap ]w <C-w>w
+nnoremap [w <C-w>W
 nnoremap s :exec "normal i".nr2char(getchar())."\e"<CR>
 nnoremap S :exec "normal a".nr2char(getchar())."\e"<CR>
 nnoremap <F2> :TernRename<CR>
@@ -192,6 +197,7 @@ nnoremap <Space>k :lprevious<CR>
 
 nnoremap <Space>ov :sp ~/.vimrc<CR>
 nnoremap <Space>os :sp ~/.scratch<CR>
+nnoremap <Space>on :e ~/notes.org<CR>
 
 function! CloseLocationAndQuickFix()
   :windo if &buftype == "quickfix" || &buftype == "locationlist" | lclose | endif
@@ -207,6 +213,8 @@ nnoremap <Space>s :TsuSearch
 
 nnoremap <Space>os :vs ~/.scratch<CR>
 nnoremap <Space>ov :vs ~/.vimrc<CR>
+
+nnoremap <Space>a :Ag 
 
 " wrap :cnext/:cprevious and :lnext/:lprevious
 function! WrapCommand(direction, prefix)
@@ -286,6 +294,7 @@ set laststatus=2
 
 let g:NERDTreeHijackNetrw=0
 
+let g:OmniSharp_server_type = 'v1'
 let g:OmniSharp_server_type = 'roslyn'
 
 " Add spaces after comment delimiters by default
@@ -307,3 +316,5 @@ map <Leader>k <Plug>(easymotion-k)
 
 let g:yankring_replace_n_pkey = '<M-p>'
 let g:yankring_replace_n_nkey = '<M-n>'
+
+let g:ag_highlight = 1
