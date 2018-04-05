@@ -43,9 +43,19 @@
 (projectile-global-mode)
 (define-key projectile-mode-map (kbd "C-t") 'projectile-find-file)
 (define-key projectile-mode-map (kbd "C-S-t") 'projectile-ag)
+(define-key projectile-mode-map (kbd "C-c m") 'projectile-vc)
 
 ;; Auto complete with Company
 (add-hook 'after-init-hook 'global-company-mode)
+(global-set-key (kbd "C-.") 'company-complete)
+
+;; Multiple cursors
+(global-set-key (kbd "C-M-m") 'mc/mark-all-dwim)
+(global-set-key (kbd "<M-down>") 'mc/mark-next-like-this)
+(global-set-key (kbd "<M-up>") 'mc/mark-previous-like-this)
+(global-set-key (kbd "<M-left>") 'mc/unmark-next-like-this)
+(global-set-key (kbd "<M-right>") 'mc/skip-to-next-like-this)
+(global-set-key (kbd "C-'") 'mc-hide-unmatched-lines-mode)
 
 ;; Javascript ------------------------
 
@@ -108,6 +118,12 @@
   ;; install it separately via package-install
   ;; `M-x package-install [ret] company`
   (company-mode +1))
+
+;; (add-hook 'tide-mode-hook
+;;           (lambda ()
+(define-key typescript-mode-map (kbd "C-c C-r") 'tide-rename-symbol)
+(define-key typescript-mode-map (kbd "C-c C-f") 'tide-references)
+
 
 ;; aligns annotation to the right hand side
 (setq company-tooltip-align-annotations t)
@@ -217,18 +233,19 @@
  '(magit-diff-use-overlays nil)
  '(package-selected-packages
    (quote
-    (sml-modeline monokai-theme solarized-theme zenburn-theme ag tern flx-ido projectile nodejs-repl company geiser racket-mode tide js2-refactor magit flycheck web-mode js2-mode)))
+    (slack sml-modeline monokai-theme solarized-theme zenburn-theme ag tern flx-ido projectile nodejs-repl company geiser racket-mode tide js2-refactor magit flycheck web-mode js2-mode)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(pos-tip-background-color "#eee8d5")
  '(pos-tip-foreground-color "#586e75")
  '(safe-local-variable-values (quote ((geiser-scheme-implementation quote mit))))
+ '(send-mail-function (quote mailclient-send-it))
  '(smartrep-mode-line-active-bg (solarized-color-blend "#859900" "#eee8d5" 0.2))
  '(sml-modeline-mode t)
  '(term-default-bg-color "#fdf6e3")
  '(term-default-fg-color "#657b83")
  '(typescript-auto-indent-flag nil)
- '(typescript-expr-indent-offset 0 t)
- '(typescript-indent-level 0 t)
+ '(typescript-expr-indent-offset 0)
+ '(typescript-indent-level 0)
  '(vc-annotate-background-mode nil)
  '(weechat-color-list
    (quote
