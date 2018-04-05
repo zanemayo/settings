@@ -27,27 +27,77 @@
   (set-face-attribute 'default nil :font my-font))
 
 ;; Ido for fuzzy things ;; useful shortcuts M-f for find file
-(require 'flx-ido)
-(setq ido-enable-flex-matching t)
-(setq ido-use-filename-at-point 'guess)
-(setq ido-create-new-buffer 'always)
-(ido-mode 1)
-(flx-ido-mode 1)
-;; disable ido faces to see flx highlights.
-(setq ido-use-faces nil)
+;; (require 'flx-ido)
+;; (setq ido-enable-flex-matching t)
+;; (setq ido-use-filename-at-point 'guess)
+;; (setq ido-create-new-buffer 'always)
+;; (ido-mode 1)
+;; (flx-ido-mode 1)
+;; ;; disable ido faces to see flx highlights.
+;; (setq ido-use-faces nil)
+
+;; Helm
+;; (require 'helm)
+;; (helm-mode 1)
+
+;; Ivy - like helm
+(ivy-mode 1)
+(setq ivy-use-virtual-buffers t)
+(setq ivy-count-format "(%d/%d) ")
+(global-set-key (kbd "C-s") 'swiper)
+(global-set-key (kbd "M-x") 'counsel-M-x)
+(global-set-key (kbd "C-x C-f") 'counsel-find-file)
+(global-set-key (kbd "<f1> f") 'counsel-describe-function)
+(global-set-key (kbd "<f1> v") 'counsel-describe-variable)
+(global-set-key (kbd "<f1> l") 'counsel-find-library)
+(global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
+(global-set-key (kbd "<f2> u") 'counsel-unicode-char)
+;; (global-set-key (kbd "C-c g") 'counsel-git)
+;; (global-set-key (kbd "C-c j") 'counsel-git-grep)
+(global-set-key (kbd "C-c k") 'counsel-ag)
+;; (global-set-key (kbd "C-x l") 'counsel-locate)
+;; (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
+(global-set-key (kbd "C-c r") 'ivy-resume)
+(setq ivy-wrap 1)
+(setq ivy-re-builders-alist
+      '((read-file-name-internal . ivy--regex-fuzzy)
+        ;;        (t . ivy--regex-plus)))
+         (swiper . ivy--regex-plus)
+         (t . ivy--regex-fuzzy)))
+
+;; Avy - jump to char
+(global-set-key (kbd "C-;") 'avy-goto-char)
+(setq avy-keys (number-sequence ?a ?z))
+
+;; Indium - javascript IDE
+;; indium-run-node ~/dev/primary-issuance-administration/node_modules/.bin/ts-node  ~/dev/primary-issuance-administration/node_modules/ava-ts/profile.js homepage.test.tsx
+;;(insert (buffer-name))))
 
 ;; dired group directories first
 (setq dired-listing-switches "-laGh --group-directories-first")
 
 ;; Projectile
 (projectile-global-mode)
-(define-key projectile-mode-map (kbd "C-t") 'projectile-find-file)
-(define-key projectile-mode-map (kbd "C-S-t") 'projectile-ag)
+(define-key projectile-mode-map (kbd "C-t") 'counsel-projectile-find-file)
+(setq local-function-key-map (delq '(kp-tab . [9]) local-function-key-map))
+(define-key projectile-mode-map (kbd "C-z") 'counsel-projectile-ag)
 (define-key projectile-mode-map (kbd "C-c m") 'projectile-vc)
+(setq projectile-completion-system 'ivy)
+
+;; Switch windows with S-arrows
+(windmove-default-keybindings)
 
 ;; Auto complete with Company
 (add-hook 'after-init-hook 'global-company-mode)
 (global-set-key (kbd "C-.") 'company-complete)
+
+;; Smooth scrolling
+(require 'smooth-scrolling)
+(smooth-scrolling-mode 1)
+(setq smooth-scroll-margin 5)
+(setq mouse-wheel-scroll-amount '(0.07))
+(setq mouse-wheel-progressive-speed nil)
+
 
 ;; Multiple cursors
 (global-set-key (kbd "C-M-m") 'mc/mark-all-dwim)
@@ -114,16 +164,19 @@
   (tide-hl-identifier-mode +1)
   (setq indent-line-function 'indent-relative) ;; get rid of broken typescript indent
   (setq-local indent-line-function 'indent-relative)
-  ;; company is an optional dependency. You have to
-  ;; install it separately via package-install
-  ;; `M-x package-install [ret] company`
+  (setq tide-tsserver-executable "node_modules/typescript/bin/tsserver")
   (company-mode +1))
 
-;; (add-hook 'tide-mode-hook
-;;           (lambda ()
-(define-key typescript-mode-map (kbd "C-c C-r") 'tide-rename-symbol)
-(define-key typescript-mode-map (kbd "C-c C-f") 'tide-references)
+(add-hook 'typescript-mode-hook
+          (lambda ()
+            (define-key typescript-mode-map (kbd "C-c C-r") 'tide-rename-symbol)
+            (define-key typescript-mode-map (kbd "C-c C-f") 'tide-references)))
 
+(add-hook 'web-mode-hook
+          (lambda ()
+            (define-key web-mode-map (kbd "C-c C-r") 'tide-rename-symbol)
+            (define-key web-mode-map (kbd "C-c C-f") 'tide-references)
+	    (define-key web-mode-map [f5] (lambda () (interactive) (indium-run-node (concat "~/dev/primary-issuance-administration/node_modules/.bin/ts-node  ~/dev/primary-issuance-administration/node_modules/ava-ts/profile.js " (buffer-name)))))))
 
 ;; aligns annotation to the right hand side
 (setq company-tooltip-align-annotations t)
@@ -134,13 +187,14 @@
 (add-hook 'typescript-mode-hook #'setup-tide-mode)
 
 ;; TSX
-;; (require 'web-mode)
-;; (add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
-;; (add-hook 'web-mode-hook
-;;           (lambda ()
-;;             (when (string-equal "tsx" (file-name-extension buffer-file-name))
-;;               (setup-tide-mode))))
-;; ;; enable typescript-tslint checker
+(require 'web-mode)
+(add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
+(add-hook 'web-mode-hook
+          (lambda ()
+            (when (string-equal "tsx" (file-name-extension buffer-file-name))
+              (setup-tide-mode))))
+(setq web-mode-enable-auto-indentation nil)
+;; enable typescript-tslint checker
 ;; (flycheck-add-mode 'typescript-tslint 'web-mode)
 
 ;; ;; JS
@@ -162,7 +216,13 @@
 ;; End Typescript --------------------
 
 ;; Lisp ------------------------------
-(setq geiser-active-implementations '(racket mit chicken guile))
+;; (define-key inferior-scheme-mode-map "\C-c\C-d"
+;;   (lambda () (interactive) (insert "(debug)")))
+;; (define-key inferior-scheme-mode-map "\C-c\C-e"
+;;   (lambda () (interactive) (insert "(exit)")))
+;; (define-key inferior-scheme-mode-map "\C-c\C-r"
+;;   (lambda () (interactive) (insert "(restart 1)")))
+
 ;; End Lisp --------------------------
 
 ;; General
@@ -189,6 +249,7 @@
  '(ansi-color-faces-vector
    [default default default italic underline success warning error])
  '(compilation-message-face (quote default))
+ '(css-indent-offset 2)
  '(cua-global-mark-cursor-color "#2aa198")
  '(cua-normal-cursor-color "#657b83")
  '(cua-overwrite-cursor-color "#b58900")
@@ -233,19 +294,20 @@
  '(magit-diff-use-overlays nil)
  '(package-selected-packages
    (quote
-    (slack sml-modeline monokai-theme solarized-theme zenburn-theme ag tern flx-ido projectile nodejs-repl company geiser racket-mode tide js2-refactor magit flycheck web-mode js2-mode)))
+    (rainbow-delimiters graphviz-dot-mode avy indium counsel-projectile counsel ivy ein smooth-scrolling slack sml-modeline monokai-theme solarized-theme zenburn-theme ag tern flx-ido projectile nodejs-repl company geiser racket-mode tide js2-refactor magit flycheck web-mode js2-mode)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(pos-tip-background-color "#eee8d5")
  '(pos-tip-foreground-color "#586e75")
  '(safe-local-variable-values (quote ((geiser-scheme-implementation quote mit))))
+ '(scheme-program-name "scheme -heap 365360 -stack 16536 --option-summary")
  '(send-mail-function (quote mailclient-send-it))
  '(smartrep-mode-line-active-bg (solarized-color-blend "#859900" "#eee8d5" 0.2))
  '(sml-modeline-mode t)
  '(term-default-bg-color "#fdf6e3")
  '(term-default-fg-color "#657b83")
  '(typescript-auto-indent-flag nil)
- '(typescript-expr-indent-offset 0)
- '(typescript-indent-level 0)
+ '(typescript-expr-indent-offset 0 t)
+ '(typescript-indent-level 0 t)
  '(vc-annotate-background-mode nil)
  '(weechat-color-list
    (quote
