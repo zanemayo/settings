@@ -34,7 +34,7 @@ if [ -d "$HOME/.local/bin" ]; then
 fi
 
 setxkbmap -option 'caps:ctrl_modifier'
-xcape -e 'Caps_Lock=Escape'
+# xcape -e 'Caps_Lock=Escape'
 . /usr/share/autojump/autojump.sh 
 
 export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting

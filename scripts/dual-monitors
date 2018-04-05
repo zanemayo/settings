@@ -1,0 +1,1 @@
+xrandr --output HDMI2 --mode 2560x1440 --above eDP1

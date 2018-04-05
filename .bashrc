@@ -116,9 +116,8 @@ if ! shopt -oq posix; then
   fi
 fi
 
-alias tmux2="TERM=xterm-256color tmux"
 export TERM=xterm-256color
-set -o vi
+# set -o vi
 source ~/.scripts/docker
 
 export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
@@ -133,8 +132,9 @@ vim()
 }
 
 setxkbmap -option 'caps:ctrl_modifier'
-xcape -e 'Caps_Lock=Escape'
-. /usr/share/autojump/autojump.sh 
+setxkbmap -option 'lv3:ralt_alt'
+#xcape -e 'Caps_Lock=Escape'
+. /usr/share/autojump/autojump.sh
 
 export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
 
@@ -146,3 +146,19 @@ export PATH="/usr/lib/jvm/default-java/bin:$PATH"
 v () {
   nvim ${1:-.}
 }
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+em () {
+    emacsclient -a '' -nqc ${1:-.} &> /dev/null
+}
+
+export PS1="\w\\$ "
+export PS1="\[\e[36m\]\w\[\e[m\]\[\e[37m\]\\$\[\e[m\] "
+
+# eval `dircolors /home/zane/.dir_colors/dircolors`
+
+# added by Anaconda3 installer
+export PATH="/home/zane/anaconda3/bin:$PATH"
