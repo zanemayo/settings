@@ -29,7 +29,15 @@
 (setq tab-stop-list '(4 8 12 16 20 24 28 32 36 40 44 48 52 56 60 64 68 72 76 80))
 (global-set-key (kbd "TAB") 'tab-to-tab-stop)
 
+;; Paths (So that gls is found when running from mac launcher)
+(setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin"))
+(setq exec-path (append exec-path '("/usr/local/bin")))
 
+
+;; Appearance
+;; Dark title bar
+(add-to-list 'default-frame-alist '(ns-appearance . dark))
+(add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
 
 ;; Font
 ;;(setq my-font "Source Code Pro for Powerline")
@@ -113,10 +121,6 @@
 (setq mouse-wheel-scroll-amount '(0.07))
 (setq mouse-wheel-progressive-speed nil)
 
-;; Fundamental mode for long lines
-(when (require 'so-long nil :noerror)
-   (so-long-enable))
-
 ;; Multiple cursors
 (global-set-key (kbd "C-M-m") 'mc/mark-all-dwim)
 (global-set-key (kbd "<M-down>") 'mc/mark-next-like-this)
@@ -144,6 +148,13 @@
   (setq pdf-info-epdfinfo-program "/usr/local/bin/epdfinfo"))
 (pdf-tools-install)
 ;; End Pdf-tools
+
+;; HTML -----------------------------
+(add-hook 'html-mode-hook
+          (lambda()
+            (setq sgml-basic-offset 4)
+            (setq indent-tabs-mode t)))
+;; End HTML -------------------------
 
 ;; Javascript ------------------------
 
@@ -215,7 +226,10 @@
           (lambda ()
             (define-key web-mode-map (kbd "C-c C-r") 'tide-rename-symbol)
             (define-key web-mode-map (kbd "C-c C-f") 'tide-references)
-	    (define-key web-mode-map [f5] (lambda () (interactive) (indium-run-node (concat "~/dev/primary-issuance-administration/node_modules/.bin/ts-node  ~/dev/primary-issuance-administration/node_modules/ava-ts/profile.js " (buffer-name)))))))
+			(define-key web-mode-map [f5] (lambda () (interactive) (indium-run-node (concat "~/dev/primary-issuance-administration/node_modules/.bin/ts-node  ~/dev/primary-issuance-administration/node_modules/ava-ts/profile.js " (buffer-name)))))))
+
+;; Allow more data to come through from tsserver
+(setq tide-server-max-response-length 1024000)
 
 ;; aligns annotation to the right hand side
 (setq company-tooltip-align-annotations t)
@@ -266,8 +280,8 @@
 
 ;; General
 
-;; Give emacs 100mb memory before garbage collecting
-(setq-default gc-cons-threshold 1000000000)
+;; Give emacs 8mb memory before garbage collecting
+(setq-default gc-cons-threshold 20000000)
 
 ;; Easier changing windows on mac
 (global-set-key (kbd "§") 'other-window)
@@ -384,6 +398,8 @@ ARG is just passed through to 'comment-dwim'"
  ;; If there is more than one, they won't work right.
  '(ansi-color-faces-vector
    [default default default italic underline success warning error])
+ '(ansi-color-names-vector
+   ["#073642" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#657b83"])
  '(company-quickhelp-color-background "#4F4F4F")
  '(company-quickhelp-color-foreground "#DCDCCC")
  '(compilation-message-face (quote default))
@@ -391,11 +407,11 @@ ARG is just passed through to 'comment-dwim'"
  '(cua-normal-cursor-color "#657b83")
  '(cua-overwrite-cursor-color "#b58900")
  '(cua-read-only-cursor-color "#859900")
- '(custom-enabled-themes (quote (leuven)))
+ '(custom-enabled-themes (quote (tango-dark)))
  '(custom-safe-themes
    (quote
-	("83b1fda71a1cf78a596891c0cc10601e93d5450148f98e9b66dde80349b20195" "ad9bbd248fa223436c71b87d80086c9e567b2e32e02bf0ccc90beb038cdbcea7" "3f44e2d33b9deb2da947523e2169031d3707eec0426e78c7b8a646ef773a2077" "53f97243218e8be82ba035ae34c024fd2d2e4de29dc6923e026d5580c77ff702" "5e52ce58f51827619d27131be3e3936593c9c7f9f9f9d6b33227be6331bf9881" "a8245b7cc985a0610d71f9852e9f2767ad1b852c2bdea6f4aadc12cce9c4d6d0" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "f456bd6f1158ef20b922cbe26a30ac35feadfea8c535058435fc011b2aaec238" default)))
- '(electric-indent-mode nil)
+	("8dce5b23232d0a490f16d62112d3abff6babeef86ae3853241a85856f9b0a6e7" "83b1fda71a1cf78a596891c0cc10601e93d5450148f98e9b66dde80349b20195" "ad9bbd248fa223436c71b87d80086c9e567b2e32e02bf0ccc90beb038cdbcea7" "3f44e2d33b9deb2da947523e2169031d3707eec0426e78c7b8a646ef773a2077" "53f97243218e8be82ba035ae34c024fd2d2e4de29dc6923e026d5580c77ff702" "5e52ce58f51827619d27131be3e3936593c9c7f9f9f9d6b33227be6331bf9881" "a8245b7cc985a0610d71f9852e9f2767ad1b852c2bdea6f4aadc12cce9c4d6d0" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "f456bd6f1158ef20b922cbe26a30ac35feadfea8c535058435fc011b2aaec238" default)))
+ '(electric-indent-mode t)
  '(fci-rule-color "#eee8d5")
  '(global-yascroll-bar-mode t)
  '(grep-find-ignored-directories
@@ -437,7 +453,7 @@ ARG is just passed through to 'comment-dwim'"
 	("#dc322f" "#cb4b16" "#b58900" "#546E00" "#B4C342" "#00629D" "#2aa198" "#d33682" "#6c71c4")))
  '(package-selected-packages
    (quote
-	(projectile-ripgrep so-long pdf-tools use-package pretty-mode zerodark-theme twilight-bright-theme beacon editorconfig rainbow-delimiters graphviz-dot-mode avy indium counsel-projectile counsel ivy ein smooth-scrolling slack sml-modeline monokai-theme solarized-theme zenburn-theme ag tern flx-ido projectile nodejs-repl company geiser racket-mode tide js2-refactor magit flycheck web-mode js2-mode)))
+	(pdf-tools use-package pretty-mode zerodark-theme twilight-bright-theme beacon editorconfig rainbow-delimiters graphviz-dot-mode avy indium counsel-projectile counsel ivy ein smooth-scrolling slack sml-modeline monokai-theme solarized-theme zenburn-theme ag tern flx-ido projectile nodejs-repl company geiser racket-mode tide js2-refactor magit flycheck web-mode js2-mode)))
  '(pdf-tools-handle-upgrades nil)
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(pos-tip-background-color "#eee8d5")
