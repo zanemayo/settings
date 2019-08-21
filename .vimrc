@@ -38,7 +38,7 @@ Plugin 'Shougo/vimproc.vim'
 Plugin 'Quramy/tsuquyomi'
 Plugin 'leafgarland/typescript-vim'
 Plugin 'ervandew/supertab'
-Plugin 'ensime/ensime-vim'
+" Plugin 'ensime/ensime-vim'
 Plugin 'derekwyatt/vim-scala'
 Plugin 'fatih/vim-go'
 Plugin 'majutsushi/tagbar'
@@ -197,7 +197,7 @@ nnoremap <Space>k :lprevious<CR>
 
 nnoremap <Space>ov :sp ~/.vimrc<CR>
 nnoremap <Space>os :sp ~/.scratch<CR>
-nnoremap <Space>on :e ~/notes.org<CR>
+nnoremap <Space>on :e ~/Documents/notes.org<CR>
 
 function! CloseLocationAndQuickFix()
   :windo if &buftype == "quickfix" || &buftype == "locationlist" | lclose | endif
